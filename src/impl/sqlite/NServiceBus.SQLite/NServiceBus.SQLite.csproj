@@ -52,6 +52,9 @@
     <None Include="Resources\System.Data.SQLite-x86.dll" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="NServiceBus">
+      <HintPath>..\..\..\..\build\nservicebus.core\NServiceBus.dll</HintPath>
+    </Reference>
     <Reference Include="NServiceBus.Config">
       <HintPath>..\..\..\..\build\nservicebus.core\NServiceBus.Config.dll</HintPath>
     </Reference>
