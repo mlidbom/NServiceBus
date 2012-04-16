@@ -68,9 +68,6 @@
     <Reference Include="NServiceBus.Serializers.XML">
       <HintPath>..\..\..\build\nservicebus.core\NServiceBus.Serializers.XML.dll</HintPath>
     </Reference>
-    <Reference Include="NServiceBus.Unicast.Queuing">
-      <HintPath>..\..\..\build\nservicebus.core\NServiceBus.Unicast.Queuing.dll</HintPath>
-    </Reference>
     <Reference Include="NServiceBus.Unicast.Transport">
       <HintPath>..\..\..\build\nservicebus.core\NServiceBus.Unicast.Transport.dll</HintPath>
     </Reference>
@@ -123,6 +120,10 @@
     <ProjectReference Include="..\NServiceBus.Unicast.Monitoring\NServiceBus.Unicast.Monitoring.csproj">
       <Project>{B074D7F7-6DCA-45B8-8DC4-D952D227BEC3}</Project>
       <Name>NServiceBus.Unicast.Monitoring</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NServiceBus.Unicast.Queuing\NServiceBus.Unicast.Queuing.csproj">
+      <Project>{04E1CE2E-C0F5-492B-BF5B-C7E9DABE92F7}</Project>
+      <Name>NServiceBus.Unicast.Queuing</Name>
     </ProjectReference>
     <ProjectReference Include="..\NServiceBus.Unicast.Subscriptions\NServiceBus.Unicast.Subscriptions.csproj">
       <Project>{CD9FA43E-A56D-4B62-8245-F911B137EC09}</Project>
