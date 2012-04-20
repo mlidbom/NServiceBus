@@ -1,4 +1,8 @@
-﻿using Common.Logging;
+﻿using System.Collections.Generic;
+using Common.Logging;
+using NServiceBus.Faults;
+using NServiceBus.ObjectBuilder;
+using System.Linq;
 
 namespace NServiceBus.Faults.Forwarder
 {
@@ -56,6 +60,13 @@ namespace NServiceBus.Faults.Forwarder
             
         }
 
+        /// <summary>
+        /// Should be used by programmer, not administrator.
+        /// Sets <see cref="IBuilder"/> implementation that will be used to 
+        /// dynamically instantiate and execute failure header providers.
+        /// </summary>
+        public IBuilder Builder { get; set; }
+
         void SetExceptionHeaders(TransportMessage message, Exception e, string reason)
         {
             message.Headers["NServiceBus.ExceptionInfo.Reason"] = reason;
@@ -75,7 +86,20 @@ namespace NServiceBus.Faults.Forwarder
 
             message.Headers[FaultsHeaderKeys.FailedQ] = failedQ.ToString();
             message.Headers["NServiceBus.TimeOfFailure"] = DateTime.UtcNow.ToWireFormattedString();
-			
+
+            CollectHeadersFromFailureHeaderProviders(message, e);
+        }
+
+        private void CollectHeadersFromFailureHeaderProviders(TransportMessage message, Exception e)
+        {
+            IEnumerable<IProvideFailureHeaders> providers = Builder.BuildAll<IProvideFailureHeaders>();
+            foreach(var provider in  providers)
+            {
+                foreach (var exceptionHeader in provider.GetExceptionHeaders(message, e))
+                {
+                    message.Headers[exceptionHeader.Key] = exceptionHeader.Value;
+                }
+            }
         }
 
         /// <summary>
