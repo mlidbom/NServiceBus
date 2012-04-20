@@ -1038,10 +1038,8 @@ namespace NServiceBus.Unicast
                 }
                 catch (Exception e)
                 {
-                    var innerEx = GetInnermostException(e);
-                    Log.Warn(handlerType.Name + " failed handling message.", GetInnermostException(innerEx));
-
-                    throw new TransportMessageHandlingFailedException(innerEx);
+                    Log.Warn(handlerType.Name + " failed handling message.", e);
+                    throw new TransportMessageHandlingFailedException(e);
                 }
             }
             return invokedHandlers;
@@ -1069,23 +1067,6 @@ namespace NServiceBus.Unicast
         /// </summary>
         public IDictionary<Type, Type> MessageDispatcherMappings { get; set; }
 
-
-        /// <summary>
-        /// Gets the inner most exception from an exception stack.
-        /// </summary>
-        /// <param name="e">The exception to get the inner most exception for.</param>
-        /// <returns>The innermost exception.</returns>
-        /// <remarks>
-        /// If the exception has no inner exceptions the provided exception will be returned.
-        /// </remarks>
-        private static Exception GetInnermostException(Exception e)
-        {
-            var result = e;
-            while (result.InnerException != null)
-                result = result.InnerException;
-
-            return result;
-        }
 
         /// <summary>
         /// If the message contains a correlationId, attempts to
