@@ -1026,7 +1026,15 @@ namespace NServiceBus.Unicast
                     dispatchers.ForEach(dispatch =>
                                             {
                                                 Log.DebugFormat("Dispatching message {0} to handler{1}", messageType, handlerTypeToInvoke);
-                                                dispatch();
+                                                try
+                                                {
+                                                    dispatch();
+                                                }
+                                                catch (TargetInvocationException e)
+                                                {
+                                                    Log.Warn(handlerType.Name + " failed handling message.", e.InnerException);
+                                                    throw new TransportMessageHandlingFailedException(e.InnerException);
+                                                }
                                             });
 
                     invokedHandlers.Add(handlerTypeToInvoke);
@@ -1035,6 +1043,10 @@ namespace NServiceBus.Unicast
                         _doNotContinueDispatchingCurrentMessageToHandlers = false;
                         break;
                     }
+                }
+                catch(TransportMessageHandlingFailedException e)
+                {
+                    throw;
                 }
                 catch (Exception e)
                 {
