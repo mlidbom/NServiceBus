@@ -271,7 +271,7 @@ namespace NServiceBus.Unicast.Transport.Transactional
             }
 
             if (exceptionFromStartedMessageHandling != null)
-                throw exceptionFromStartedMessageHandling; //cause rollback 
+                throw new MessageHandlingStartedFailedException(exceptionFromStartedMessageHandling); //cause rollback 
 
             //care about failures here
             var exceptionFromMessageHandling = OnTransportMessageReceived(m);
@@ -285,10 +285,10 @@ namespace NServiceBus.Unicast.Transport.Transactional
                 throw new AbortHandlingCurrentMessageException();
 
             if (exceptionFromMessageHandling != null) //cause rollback
-                throw exceptionFromMessageHandling;
+                throw new MessageHandlingFailedException(exceptionFromMessageHandling);
 
             if (exceptionFromMessageModules != null) //cause rollback
-                throw exceptionFromMessageModules;
+                throw new MessageModuleFailedException(exceptionFromMessageModules);
         }
 
         private bool HandledMaxRetries(TransportMessage message)
