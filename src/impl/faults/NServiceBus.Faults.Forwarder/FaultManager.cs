@@ -78,7 +78,7 @@ namespace NServiceBus.Faults.Forwarder
 			message.Headers["NServiceBus.ExceptionInfo.HelpLink"] = e.HelpLink;
             message.Headers["NServiceBus.ExceptionInfo.Message"] = e.Message;
             message.Headers["NServiceBus.ExceptionInfo.Source"] = e.Source;
-            message.Headers["NServiceBus.ExceptionInfo.StackTrace"] = e.StackTrace;
+            message.Headers["NServiceBus.ExceptionInfo.StackTrace"] = CreateStackTrace(e);
 
             message.Headers[TransportHeaderKeys.OriginalId] = message.Id;
 
@@ -88,6 +88,31 @@ namespace NServiceBus.Faults.Forwarder
             message.Headers["NServiceBus.TimeOfFailure"] = DateTime.UtcNow.ToWireFormattedString();
 
             CollectHeadersFromFailureHeaderProviders(message, e);
+        }
+
+        private string CreateStackTrace(Exception exception)
+        {
+            var stackTraces = 
+                GetNestedExceptionsList(exception)
+                .Reverse()
+                .Select(currentException => string.Format("Exception:{1}{0}Message:{2}{0}{0}{3}",
+                                                          Environment.NewLine,
+                                                          currentException.GetType().FullName,
+                                                          currentException.Message, currentException.StackTrace))
+                .ToList();
+
+            return string.Join(string.Format("{0}   ---End of inner stack trace---{0}{0}", Environment.NewLine),
+                               stackTraces);
+        }
+
+        private IEnumerable<Exception> GetNestedExceptionsList(Exception exception)
+        {
+            yield return exception;
+            while (exception.InnerException != null)
+            {
+                yield return exception.InnerException;
+                exception = exception.InnerException;
+            }
         }
 
         private void CollectHeadersFromFailureHeaderProviders(TransportMessage message, Exception e)
