@@ -120,9 +120,15 @@ namespace NServiceBus.Faults.Forwarder
             IEnumerable<IProvideFailureHeaders> providers = Builder.BuildAll<IProvideFailureHeaders>();
             foreach(var provider in  providers)
             {
-                foreach (var exceptionHeader in provider.GetExceptionHeaders(message, e))
+                try
                 {
-                    message.Headers[exceptionHeader.Key] = exceptionHeader.Value;
+                    foreach (var exceptionHeader in provider.GetExceptionHeaders(message, e))
+                    {
+                        message.Headers[exceptionHeader.Key] = exceptionHeader.Value;
+                    }
+                }catch(Exception exception)
+                {
+                    Logger.Error("Exception thrown by FailureHandlerProvider", exception);
                 }
             }
         }

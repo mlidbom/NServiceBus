@@ -218,7 +218,7 @@ namespace NServiceBus.Unicast.Transport.Transactional
                 var originalException = e;
 
                 if (e is TransportMessageHandlingFailedException)
-                    originalException = ((TransportMessageHandlingFailedException)e).OriginalException;
+                    originalException = e.InnerException;
 
                 if (IsTransactional)
                 {
